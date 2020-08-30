@@ -131,8 +131,4 @@ class Supply extends CI_Controller {
 		$this->load->view('footer');
 	}
 	
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 3be60e9f841f4ad1282d4b183bcfc63801172f7f

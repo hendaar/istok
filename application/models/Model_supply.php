@@ -145,17 +145,25 @@ class Model_supply extends CI_Model {
 	
 	function get_availability_performance($storage_id, $start, $end, $label_type) {
 		if($label_type == 'day'){
-			$SQL = "SELECT ROUND(SUM(volume)) as volume, DATE_FORMAT(trans_date, '%Y-%m-%d') as date_atg
+			$SQL = "SELECT 
+							COUNT(CASE WHEN volume > stock_max THEN 1 END) as over_stock,
+							COUNT(CASE WHEN volume < stock_min THEN 1 END) as miss_stock,
+							DATE_FORMAT(trans_date, '%Y-%m-%d') as date_atg
 							FROM `trans_atg`
-							WHERE storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
-							GROUP BY trans_atg.atg_id, DATE_FORMAT(trans_date, '%Y-%m-%d')
+							INNER JOIN mst_parameter ON mst_parameter.storage_id=trans_atg.storage_id
+							WHERE trans_atg.storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
+							GROUP BY DATE_FORMAT(trans_date, '%Y-%m-%d')
 							ORDER BY trans_date DESC, trans_time DESC";
 	
 		}else{
-			$SQL = "SELECT ROUND(SUM(volume)) as volume, DATE_FORMAT(trans_date, '%M') as date_atg 
+			$SQL = "SELECT  
+							COUNT(CASE WHEN volume > stock_max THEN 1 END) as over_stock,
+							COUNT(CASE WHEN volume < stock_min THEN 1 END) as miss_stock,
+							DATE_FORMAT(trans_date, '%M') as date_atg
 							FROM `trans_atg`
-							WHERE storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
-							GROUP BY trans_atg.atg_id, DATE_FORMAT(trans_date, '%M')
+							INNER JOIN mst_parameter ON mst_parameter.storage_id=trans_atg.storage_id
+							WHERE trans_atg.storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
+							GROUP BY DATE_FORMAT(trans_date, '%M')
 							ORDER BY trans_date DESC, trans_time DESC";
 		}
 		$query = $this->db->query($SQL);

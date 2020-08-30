@@ -261,8 +261,5 @@ class Monitoring extends CI_Controller {
 			hexdec(substr($hash, 4, 2))); //b
 	}	
 
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 3be60e9f841f4ad1282d4b183bcfc63801172f7f

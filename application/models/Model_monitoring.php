@@ -81,7 +81,7 @@ class Model_monitoring extends CI_Model {
 						INNER JOIN mst_storage ON mst_storage.storage_id=mst_smartfill.storage_id
 						WHERE (trans_sap_log.error_type = NULL OR trans_sap_log.error_type = '')
 						AND trans_sap_log.doc_type = 'GI'
-						AND (movement = '9001' OR movement = '9003')
+						AND (movement = 'GI Fuel-Mine OB' OR movement = 'GI Fuel-Mine Coal')
 						AND DATE_FORMAT(trans_smartfill.CreatedDate, '%Y-%m-%d') BETWEEN '$start' AND '$end'
 						ORDER BY movement ASC";
 		$query = $this->db->query($SQL);

@@ -1318,8 +1318,6 @@ class Chart extends CI_Controller {
 		$end = $tanggal_sampai;
 		
 		$availability_performance 	= $this->Model_supply->get_availability_performance($storage_id,$start, $end, $label_type);
-		$parameters = $this->Model_supply->get_parameters($storage_id);
-		
 		if($label_type == 'month'){
 			$x = 0;
 			while($x++ < 12) {
@@ -1353,68 +1351,34 @@ class Chart extends CI_Controller {
 		}
 		
 		foreach ($availability_performance as $availability) {
-			$data[$availability['date_atg']]['over'] = $availability['volume']; 
+			$data[$availability['date_atg']]['over'] = $availability['over_stock']; 
+			$data[$availability['date_atg']]['miss'] = $availability['miss_stock']; 
 		}
-		
 		$label = array();
-		$average = array();
-		$data_forecast = array();
-		$maximal = array();
-		$minimum = array();
-		$safety = array();
-		$temp_average = 0;
+		$over = array();
+		$miss = array();
 		$i=0;
 		foreach($months as $item){
 			if(isset($data[$item])){
 				$label[$i] = $item;
-				if(isset($data[$item]['average'])){
-					$average[$i] = $data[$item]['average'];
-					$temp_average = $data[$item]['average'];
-				}elseif(isset($data[$item]['forecast'])){
-					if(isset($data[$months_before[$i]]['forecast']) && !empty($data[$months_before[$i]]['forecast']) && $temp_average > 0){
-						$average[$i] = ($temp_average-$data[$months_before[$i]]['forecast'])+$data[$item]['forecast'];
-						$temp_average = $average[$i];
-					}else{
-						$temp_average = $data[$item]['forecast'];
-						$average[$i] = $data[$item]['forecast'];
-					}
-					
-				}else{
-					$average[$i] = 0;
-				}
-				$data_forecast[$i] = (isset($data[$item]['forecast']))? $data[$item]['forecast'] : 0;
+				$over[$i] = $data[$item]['over'];
+				$miss[$i] = $data[$item]['miss'];
 			}else{
 				$label[$i] = $item;
-				$average[$i] = 0;
-				$data_forecast[$i] = 0;
+				$over[$i] = 0;
+				$miss[$i] = 0;
 			}	
-			$maximal[$i] = $data[1]['maximal'];
-			$minimum[$i] = $data[1]['minimum'];
-			$safety[$i] = $data[1]['safety'];
 			$i++;
 		}
 		
 		$res['chart'] = array();
-		$res['chart_fill'] = array();
 		$res['labels'] = implode(',', $label);
-		$res['chart'][0]['label'] = 'Status Stock';
-		$res['chart'][0]['datas'] = implode(',', $average);
-		$res['chart'][0]['color'] = 'orange';
-		$res['chart'][1]['label'] = 'Forecast';
-		$res['chart'][1]['datas'] = implode(',', $data_forecast);
-		$res['chart'][1]['color'] = '#0080ff';
-		$res['chart_fill'][1]['label'] = 'Stock Max';
-		$res['chart_fill'][1]['datas'] = implode(',', $maximal);
-		$res['chart_fill'][1]['color'] = '#90EE90';
-		$res['chart_fill'][1]['fill'] = '3';
-		$res['chart_fill'][2]['label'] = 'Stock Min';
-		$res['chart_fill'][2]['datas'] = implode(',', $minimum);
-		$res['chart_fill'][2]['color'] = '#FFFACD';
-		$res['chart_fill'][2]['fill'] = '4';
-		$res['chart_fill'][3]['label'] = 'Safety Stock';
-		$res['chart_fill'][3]['datas'] = implode(',', $safety);
-		$res['chart_fill'][3]['color'] = '#FFC0CB';
-		$res['chart_fill'][3]['fill'] = 'start';
+		$res['chart'][0]['label'] = 'Total day of over stock';
+		$res['chart'][0]['datas'] = implode(',', $over);
+		$res['chart'][0]['color'] = 'blue';
+		$res['chart'][1]['label'] = 'Total day of near miss stock';
+		$res['chart'][1]['datas'] = implode(',', $miss);
+		$res['chart'][1]['color'] = 'orange';
 		echo json_encode($res);
 	}
 	

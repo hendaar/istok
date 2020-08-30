@@ -82,24 +82,17 @@
 
 <div class="col-md-12">
 	<div class="row">
-		<div class="col-md-4 card shadow">
-			<div class=""><canvas id="myChart3" height="300"></canvas></div>
-			<div class=""><canvas id="myChart4" height="300"></canvas></div>
-			<div class=""><canvas id="myChart5" height="300"></canvas></div>
+		<div class="col-md-6 card">
+			<div class="shadow"><canvas id="myChart3" height="200"></canvas></div></br>
+			<div class="shadow"><canvas id="myChart4" height="200"></canvas></div></br>
+			<div class="shadow"><canvas id="myChart5" height="200"></canvas></div></br>
 		</div>
 		
-		<div class="col-md-4 card shadow">
-			<div class=""><canvas id="myChart6" height="300"></canvas></div>
-			<div class=""><canvas id="myChart7" height="300"></canvas></div>
-			<div class=""><canvas id="myChart8" height="300"></canvas></div>
+		<div class="col-md-6 card">
+			<div class="shadow"><canvas id="myChart6" height="200"></canvas></div></br>
+			<div class="shadow"><canvas id="myChart7" height="200"></canvas></div></br>
+			<div class="shadow"><canvas id="myChart8" height="200"></canvas></div></br>
 		</div>
-		
-		<div class="col-md-4">
-			<div class="card shadow"><canvas id="myChart9" height="300"></canvas></div>
-			<div class="card shadow"><canvas id="myChart10" height="300"></canvas></div>
-			<div class="card shadow"><canvas id="myChart11" height="300"></canvas></div>
-		</div>
-	</div>
 </div>
 
 <script>
@@ -574,525 +567,205 @@ setup_sambarata();
 </script>
 
 <script>
-var ctx = document.getElementById('myChart6').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: {
-        labels: ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agt', 'sep', 'oct', 'nov', 'dec'],
-        datasets: [{
-            label: 'Total day of over stock',
-            backgroundColor: 'blue',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [5, 7, 9, 5, 3, 6, 2, 4, 7, 6, 5, 6],
-			fill: false,
-		}, {
-            label: 'Total day of near miss stock',
-            backgroundColor: 'orange',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [2, 3, 0, 4, 3, 2, 3, 1, 0, 4, 2, 4],
-			fill: false,
-		}]
-    },
+
+const api_url_available_1 = "<?php echo base_url().'chart/availability_performance/1?'.$qeury_url; ?>";
+
+var departments_available_1 = [];
+
+async function getData_available_1() {
+	const response = await fetch(api_url_available_1);
+	const data = await response.json();
+	const data_label = data.labels;
 	
-	options: {
-			title: {
-				display: true,
-				text: 'Availability Performance Lati Storage'
-			},
-		responsive: true,
-		scales: {
-			xAxes: [{
-				stacked: false // this should be set to make the bars stacked
-			}],
-			yAxes: [{
-				stacked: false // this also..
-			}]
-		}
+	for (var department in data.chart) {
+		var departmentObject = prepare_inventory_data(data.chart[department].label, data.chart[department].datas, data.chart[department].color);
+		departments_available_1.push(departmentObject);
 	}
-});
-</script>
-
-<script>
-var ctx = document.getElementById('myChart7').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: {
-        labels: ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agt', 'sep', 'oct', 'nov', 'dec'],
-        datasets: [{
-            label: 'Total day of over stock',
-            backgroundColor: 'blue',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [5, 7, 9, 5, 3, 6, 2, 4, 7, 6, 5, 6],
-			fill: false,
-		}, {
-            label: 'Total day of near miss stock',
-            backgroundColor: 'orange',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [2, 3, 0, 4, 3, 2, 3, 1, 0, 4, 2, 4],
-			fill: false,
-		}]
-    },
 	
-	options: {
-			title: {
-				display: true,
-				text: 'Availability Performance Suaran Storage'
-			},
-		responsive: true,
-		scales: {
-			xAxes: [{
-				stacked: false // this should be set to make the bars stacked
-			}],
-			yAxes: [{
-				stacked: false // this also..
-			}]
-		}
-	}
-});
-</script>
+	return {data_label, departments_available_1};	
+}
 
-<script>
-var ctx = document.getElementById('myChart8').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: {
-        labels: ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agt', 'sep', 'oct', 'nov', 'dec'],
-        datasets: [{
-            label: 'Total day of over stock',
-            backgroundColor: 'blue',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [5, 7, 9, 5, 3, 6, 2, 4, 7, 6, 5, 6],
-			fill: false,
-		}, {
-            label: 'Total day of near miss stock',
-            backgroundColor: 'orange',
-            borderColor: 'rgb(255, 99, 132)',
-            data: [2, 3, 0, 4, 3, 2, 3, 1, 0, 4, 2, 4],
-			fill: false,
-		}]
-    },
+
+ async function setup_lati_available() {
+	const ctx = document.getElementById('myChart6').getContext('2d');
+	const globalTemps = await getData_available_1();
 	
-	options: {
-			title: {
-				display: true,
-				text: 'Availability Performance Sambarata Storage'
+	var chartData = {
+			labels: globalTemps.data_label.split(','),
+			datasets : globalTemps.departments_available_1
+	};
+console.log(globalTemps);
+	const myChart = new Chart(ctx, {
+		type: 'bar',
+		data: chartData,
+		options: {
+				title: {
+					display: true,
+					text: 'Availability Performance Lati Storage'
+				},
+			responsive: true,
+			tooltips: {
+			  callbacks: {
+					label: function(tooltipItem, data) {
+						var value = tooltipItem.yLabel;
+						value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						return data.datasets[tooltipItem.datasetIndex].label+' : '+value;
+					}
+			  } // end callbacks:
 			},
-		responsive: true,
-		scales: {
-			xAxes: [{
-				stacked: false // this should be set to make the bars stacked
-			}],
-			yAxes: [{
-				stacked: false // this also..
-			}]
+			scales: {
+				xAxes: [{
+					stacked: false // this should be set to make the bars stacked
+				}],
+				yAxes: [{
+					stacked: false, // this also..
+					ticks: {
+									// Include a dollar sign in the ticks
+									callback: function(value, index, values) {
+											return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+									}
+                }
+				}]
+			}
 		}
-	}
-});
+	});
+}
+
+setup_lati_available();
 </script>
 
 <script>
-var ctx = document.getElementById('myChart9').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
-    // The data for our dataset
-    data: {
-        labels: ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agt', 'sep', 'oct', 'nov', 'dec'],
-        datasets: [{
-            label: 'MTBA-LMO',
-            backgroundColor: 'green',
-            borderColor: 'green',
-            data: [5, 7, 9, 5, 3, 6, 2, 4, 7, 6, 5, 6],
-			fill: true,
-			order: 1
-		}, {
-            label: 'MTBA-SUR',
-            backgroundColor: 'yellow',
-            borderColor: 'yellow',
-            data: [2, 3, 0, 4, 3, 2, 3, 1, 0, 4, 2, 4],
-			fill: true,
-			order: 2
-		}, {
-            label: 'MTBA-SMO',
-            backgroundColor: 'red',
-            borderColor: 'red',
-            data: [2, 3, 0, 4, 3, 2, 3, 1, 0, 4, 2, 4],
-			fill: true,
-			order: 3
-		}]
-    },
+
+const api_url_available_2 = "<?php echo base_url().'chart/availability_performance/2?'.$qeury_url; ?>";
+
+var departments_available_2 = [];
+
+async function getData_available_2() {
+	const response = await fetch(api_url_available_2);
+	const data = await response.json();
+	const data_label = data.labels;
 	
-	options: {
-			title: {
-				display: true,
-				text: 'Schedule Performance average of mean between cargo arrival'
-			},
-		responsive: true,
-		scales: {
-			xAxes: [{
-				stacked: false // this should be set to make the bars stacked
-			}],
-			yAxes: [{
-				stacked: false // this also..
-			}]
-		}
+	for (var department in data.chart) {
+		var departmentObject = prepare_inventory_data(data.chart[department].label, data.chart[department].datas, data.chart[department].color);
+		departments_available_2.push(departmentObject);
 	}
-});
-</script>
-
-<script>
-var ctx = document.getElementById('myChart10').getContext('2d');
-var myChart = new Chart(ctx, {
-  type: 'pie',
-  data: {
-    labels: ['LMO', 'SUR', 'SMO'],
-    datasets: [{
-      label: '# of Tomatoes',
-      data: [3.20, 2.60, 4.70],
-      backgroundColor: [
-        'blue',
-        'red',
-        'green'
-      ],
-      borderColor: [
-        'rgba(255,99,132,1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)'
-      ],
-      borderWidth: 1
-    }]
-  },
-  options: {
-   	cutoutPercentage: 0,
-    responsive: false,
-
-  }
-});
-</script>
-
-<script>
-var ctx = document.getElementById('myChart11').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'bar',
-    // The data for our dataset
-    data: {
-        labels: ['AKR', 'PTM', 'PAN'],
-        datasets: [{
-            label: 'Number of delay time',
-            backgroundColor: 'green',
-            borderColor: 'green',
-            data: [4, 5, 2]
-        }, {
-            label: 'Sum of delay time',
-            backgroundColor: 'red',
-            borderColor: 'red',
-            data: [7, 9, 4]
-		}]
-    },
 	
-	options: {
-			title: {
-				display: true,
-				text: 'Number of delay Time'
+	return {data_label, departments_available_2};	
+}
+
+
+ async function setup_suaran_available() {
+	const ctx = document.getElementById('myChart7').getContext('2d');
+	const globalTemps = await getData_available_2();
+	
+	var chartData = {
+			labels: globalTemps.data_label.split(','),
+			datasets : globalTemps.departments_available_2
+	};
+console.log(globalTemps);
+	const myChart = new Chart(ctx, {
+		type: 'bar',
+		data: chartData,
+		options: {
+				title: {
+					display: true,
+					text: 'Availability Performance Suaran Storage'
+				},
+			responsive: true,
+			tooltips: {
+			  callbacks: {
+					label: function(tooltipItem, data) {
+						var value = tooltipItem.yLabel;
+						value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						return data.datasets[tooltipItem.datasetIndex].label+' : '+value;
+					}
+			  } // end callbacks:
 			},
-		responsive: true,
-		legend: {
-			display: true,
-			position: 'bottom', // place legend on the right side of chart
-			align: 'start',
-		},
-		scales: {
-			xAxes: [{
-				stacked: true // this should be set to make the bars stacked
-			}],
-			yAxes: [{
-				stacked: true // this also..
-			}]
+			scales: {
+				xAxes: [{
+					stacked: false // this should be set to make the bars stacked
+				}],
+				yAxes: [{
+					stacked: false, // this also..
+					ticks: {
+									// Include a dollar sign in the ticks
+									callback: function(value, index, values) {
+											return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+									}
+                }
+				}]
+			}
 		}
-	}
-});
+	});
+}
+
+setup_suaran_available();
 </script>
 
 <script>
-// var ctx = document.getElementById('myChart').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
 
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
+const api_url_available_3 = "<?php echo base_url().'chart/availability_performance/3?'.$qeury_url; ?>";
 
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Vendor CSI Performance'
-			// }
-    // },
-// });
+var departments_available_3 = [];
 
-// var ctx = document.getElementById('myChart2').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
+async function getData_available_3() {
+	const response = await fetch(api_url_available_3);
+	const data = await response.json();
+	const data_label = data.labels;
+	
+	for (var department in data.chart) {
+		var departmentObject = prepare_inventory_data(data.chart[department].label, data.chart[department].datas, data.chart[department].color);
+		departments_available_3.push(departmentObject);
+	}
+	
+	return {data_label, departments_available_3};	
+}
 
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
 
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Transporter CSI Performance'
-			// }
-    // },
-// });
+ async function setup_sambarata_available() {
+	const ctx = document.getElementById('myChart8').getContext('2d');
+	const globalTemps = await getData_available_3();
+	
+	var chartData = {
+			labels: globalTemps.data_label.split(','),
+			datasets : globalTemps.departments_available_3
+	};
+console.log(globalTemps);
+	const myChart = new Chart(ctx, {
+		type: 'bar',
+		data: chartData,
+		options: {
+				title: {
+					display: true,
+					text: 'Availability Performance Sambarata Storage'
+				},
+			responsive: true,
+			tooltips: {
+			  callbacks: {
+					label: function(tooltipItem, data) {
+						var value = tooltipItem.yLabel;
+						value = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						return data.datasets[tooltipItem.datasetIndex].label+' : '+value;
+					}
+			  } // end callbacks:
+			},
+			scales: {
+				xAxes: [{
+					stacked: false // this should be set to make the bars stacked
+				}],
+				yAxes: [{
+					stacked: false, // this also..
+					ticks: {
+									// Include a dollar sign in the ticks
+									callback: function(value, index, values) {
+											return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+									}
+                }
+				}]
+			}
+		}
+	});
+}
 
-// var ctx = document.getElementById('myChart3').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Inventory Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart4').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Availability Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart5').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Inventory Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart6').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Inventory Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart7').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Inventory Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart8').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Inventory Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart9').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Schedule Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart10').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'doughnut',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },	
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Fuel Bunkering Performance'
-			// }
-    // },
-// });
-
-// var ctx = document.getElementById('myChart11').getContext('2d');
-// var chart = new Chart(ctx, {
-    // // The type of chart we want to create
-    // type: 'bar',
-
-    // // The data for our dataset
-    // data: {
-        // labels: ['January', 'February', 'March'],
-        // datasets: [{
-            // label: 'My First dataset',
-            // backgroundColor: 'rgb(255, 99, 132)',
-            // borderColor: 'rgb(255, 99, 132)',
-            // data: [20, 30, 45]
-        // }]
-    // },
-
-    // // Configuration options go here
-	// options: {
-			// title: {
-				// display: true,
-				// text: 'Time Arrival Performance'
-			// }
-    // },
-// });
-
+setup_sambarata_available();
 </script>
