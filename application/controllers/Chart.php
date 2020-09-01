@@ -207,11 +207,21 @@ class Chart extends CI_Controller {
 		$res = array();
 		$temp = array();
 		$i = 0;
-		foreach($fuel as $item){
-			$temp['storage'][$i] = $item['storage_name'];
-			$temp['color'][$i] = $array_color[$i];
-			$temp['fuel'][$i] = round($item['volume'] - $item['tc_vol']);
-			$i++;
+		if(!empty($fuel)){
+			foreach($fuel as $item){
+				$temp['storage'][$i] = $item['storage_name'];
+				$temp['color'][$i] = $array_color[$i];
+				$temp['fuel'][$i] = round($item['volume'] - $item['tc_vol']);
+				$i++;
+			}
+		}else{
+			$storage = $this->Model_monitoring->get_storage();
+			foreach($storage as $item){
+				$temp['storage'][$i] = $item['storage_name'];
+				$temp['color'][$i] = $array_color[$i];
+				$temp['fuel'][$i] = 0;
+				$i++;
+			}
 		}
 		$res['storage'] = implode(',', $temp['storage']);
 		$res['color'] = implode(',', $temp['color']);
