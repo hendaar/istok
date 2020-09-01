@@ -143,14 +143,20 @@ class Model_supply extends CI_Model {
 	
 	/*------------------------------------------------------------------------------*/
 	
-	function get_availability_performance($storage_id, $start, $end, $label_type) {
+	function get_availability_performance($storage_id, $start, $end, $label_type) {		
+		$start_year 	= date('Y', strtotime($start));
+		$end_year 		= date('Y', strtotime($end));
+		$start_month 	= date('n', strtotime($start));
+		$end_month 		= date('n', strtotime($end));
 		if($label_type == 'day'){
 			$SQL = "SELECT 
 							COUNT(CASE WHEN volume > stock_max THEN 1 END) as over_stock,
 							COUNT(CASE WHEN volume < stock_min THEN 1 END) as miss_stock,
 							DATE_FORMAT(trans_date, '%Y-%m-%d') as date_atg
 							FROM `trans_atg`
-							INNER JOIN mst_parameter ON mst_parameter.storage_id=trans_atg.storage_id
+							INNER JOIN (SELECT stock_max, stock_min, param_month FROM trans_parameter WHERE storage_id = '$storage_id'
+							AND ( param_year >= '$start_year' AND param_year <= '$end_year')
+							AND ( param_month >= '$start_month' AND param_month <= '$end_month')) as parameter ON parameter.param_month=month(trans_atg.trans_date)
 							WHERE trans_atg.storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
 							GROUP BY DATE_FORMAT(trans_date, '%Y-%m-%d')
 							ORDER BY trans_date DESC, trans_time DESC";
@@ -161,11 +167,30 @@ class Model_supply extends CI_Model {
 							COUNT(CASE WHEN volume < stock_min THEN 1 END) as miss_stock,
 							DATE_FORMAT(trans_date, '%M') as date_atg
 							FROM `trans_atg`
-							INNER JOIN mst_parameter ON mst_parameter.storage_id=trans_atg.storage_id
+							INNER JOIN (SELECT stock_max, stock_min, param_month FROM trans_parameter WHERE storage_id = '$storage_id'
+							AND ( param_year >= '$start_year' AND param_year <= '$end_year')
+							AND ( param_month >= '$start_month' AND param_month <= '$end_month')) as parameter ON parameter.param_month=month(trans_atg.trans_date)
 							WHERE trans_atg.storage_id = '$storage_id' AND (DATE_FORMAT(trans_date, '%Y-%m-%d') BETWEEN '$start' AND '$end')
 							GROUP BY DATE_FORMAT(trans_date, '%M')
 							ORDER BY trans_date DESC, trans_time DESC";
 		}
+		$query = $this->db->query($SQL);
+
+		return $query->result_array();
+	}
+	
+	/*------------------------------------------------------------------------------*/
+	
+	function get_parameters_v2($id, $start, $end) {
+		$start_year 	= date('Y', strtotime($start));
+		$end_year 		= date('Y', strtotime($end));
+		$start_month 	= date('n', strtotime($start));
+		$end_month 		= date('n', strtotime($end));
+		$SQL = "SELECT stock_max as maximal, stock_min as minimum, safety_stock as safety, param_year, param_month
+							FROM trans_parameter
+							WHERE storage_id = '$id'
+							AND ( param_year >= '$start_year' AND param_year <= '$end_year')
+							AND ( param_month >= '$start_month' AND param_month <= '$end_month')";
 		$query = $this->db->query($SQL);
 
 		return $query->result_array();

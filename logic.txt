@@ -50,7 +50,9 @@
 	legend = biru (sum(trans_atg.volume) > stock_max)
 	legend = orange (sum(trans_atg.volume) < stock_min)
 	x = trans_atg.trans_date
-	y = manual_surveyor - vol_atg
+	
 	trans_atg -> trans_parameters/mst_parameter
+	
+	
 - schedule performance average
 	skip

@@ -1132,6 +1132,18 @@ class Chart extends CI_Controller {
 		
 		$inventory_performance 	= $this->Model_supply->get_inventory_performance_new($storage_id,$start, $end, $label_type);
 		$forecast 							= $this->Model_supply->get_forecast($storage_id,$start, $end, $label_type);
+		$parameters 						= $this->Model_supply->get_parameters_v2($storage_id, $start, $end);
+		$array_params = Array
+        (
+            'maximal' => 0,
+            'minimum' => 0,
+            'safety' => 0,
+            'param_year' => 0,
+            'param_month' => 0
+        );
+		foreach($parameters as $params){
+			$item_params[sprintf("%02d", $params['param_month'])] = $params;
+		}
 		
 		if($label_type == 'month'){
 			$x = 0;
@@ -1143,6 +1155,13 @@ class Chart extends CI_Controller {
 				$mon = $MonthNumber-1;
 				$monmin = $MonthNumber-2;
 				$months[] = date("F", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				$month_label = date("F", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				$current = date("m", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				if(!isset($item_params[$current])){
+					$item_params[$month_label] = $array_params;
+				}else{
+					$item_params[$month_label] = $item_params[$current];
+				}
 				$months_before[] = date("F", strtotime("+".$monmin."month",strtotime('2020-01-01')));
 			}
 		}elseif($label_type == 'quarterly'){
@@ -1156,6 +1175,13 @@ class Chart extends CI_Controller {
 				$mon = $MonthNumber-1;
 				$monmin = $MonthNumber-2;
 				$months[] = date("F", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				$month_label = date("F", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				$current = date("m", strtotime("+".$mon."month",strtotime('2020-01-01')));
+				if(!isset($item_params[$current])){
+					$item_params[$month_label] = $array_params;
+				}else{
+					$item_params[$month_label] = $item_params[$current];
+				}
 				$months_before[] = date("F", strtotime("+".$monmin."month",strtotime('2020-01-01')));
 			}
 		}elseif($label_type == 'day'){
@@ -1163,6 +1189,12 @@ class Chart extends CI_Controller {
 			$end = $tanggal_sampai;
 			while(strtotime($start) <= strtotime($end)) {
 				$months[] = $start;
+				$current = date("m", strtotime($start));
+				if(isset($item_params[$current])){
+					$item_params[$start] = $item_params[$current];
+				}else{
+					$item_params[$start] = $array_params;
+				}
 				$start = date ("Y-m-d", strtotime("+1 day", strtotime($start)));
 				$months_before[] = date ("Y-m-d", strtotime("-2 day", strtotime($start)));
 			}
@@ -1175,12 +1207,7 @@ class Chart extends CI_Controller {
 		foreach ($forecast as $item_forecast) {
 			$data[$item_forecast['trans_date']]['forecast'] = $item_forecast['inventory']; 
 		}
-		$parameters = $this->Model_supply->get_parameters($storage_id);
-		foreach ($parameters as $inventory) {  
-			$data[1]['maximal'] = $inventory['maximal']; 
-			$data[1]['minimum'] = $inventory['minimum']; 
-			$data[1]['safety'] = $inventory['safety']; 
-		}
+		
 		$label = array();
 		$average = array();
 		$data_forecast = array();
@@ -1213,9 +1240,9 @@ class Chart extends CI_Controller {
 				$average[$i] = 0;
 				$data_forecast[$i] = 0;
 			}	
-			$maximal[$i] = $data[1]['maximal'];
-			$minimum[$i] = $data[1]['minimum'];
-			$safety[$i] = $data[1]['safety'];
+			$maximal[$i] = $item_params[$item]['maximal'];
+			$minimum[$i] = $item_params[$item]['minimum'];
+			$safety[$i] = $item_params[$item]['safety'];
 			$i++;
 		}
 		

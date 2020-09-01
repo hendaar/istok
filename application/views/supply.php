@@ -415,7 +415,8 @@ function prepare_inventory_data_fill(label, datas, color, fill){
 			backgroundColor: color,
 			fill: fill,
 			borderColor: color,
-			pointRadius: 0
+			pointRadius: 0,
+			steppedLine: true
 	}
 }
 setup_lati();
